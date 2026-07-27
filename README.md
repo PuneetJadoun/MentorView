@@ -160,51 +160,128 @@ A FastAPI backend exposes REST APIs while SQLite stores all application data thr
 
 # Screenshots
 
-## Dashboard
+<img width="1919" height="907" alt="Screenshot 2026-07-27 142827" src="https://github.com/user-attachments/assets/3e40d356-7cb7-4ad4-bddd-81d34ea34dba" />
 
-![Dashboard](docs/screenshots/dashboard.png)
 
----
 
-## Create Form
 
-![Create Form](docs/screenshots/create-form.png)
+<img width="1919" height="901" alt="Screenshot 2026-07-27 142846" src="https://github.com/user-attachments/assets/592fb701-7632-45f6-bf38-3228d41593a9" />
 
----
 
-## Form Builder
 
-![Builder](docs/screenshots/form-builder.png)
 
----
 
-## Publish Form
 
-![Publish](docs/screenshots/publish-form.png)
+<img width="1919" height="901" alt="Screenshot 2026-07-27 143010" src="https://github.com/user-attachments/assets/511f1646-dd74-4a3c-8606-4cba18741bb7" />
 
----
 
-## Public Welcome Screen
 
-![Welcome](docs/screenshots/public-home.png)
 
----
 
-## Conversational Form
 
-![Question](docs/screenshots/question-screen.png)
 
----
 
-## Thank You Screen
+<img width="1916" height="910" alt="Screenshot 2026-07-27 143028" src="https://github.com/user-attachments/assets/5d5c9373-356e-421d-be08-734adf78ded7" />
 
-![Thank You](docs/screenshots/thank-you.png)
 
----
 
-## Responses Dashboard
 
-![Responses](docs/screenshots/responses.png)
+
+
+
+
+
+<img width="1914" height="901" alt="Screenshot 2026-07-27 143410" src="https://github.com/user-attachments/assets/e1f84e02-3c4b-42cd-98c4-2bdccf75a533" />
+
+
+
+
+
+
+
+
+<img width="1912" height="902" alt="Screenshot 2026-07-27 143427" src="https://github.com/user-attachments/assets/144ce5e0-8651-4d02-a746-41ba54bb641d" />
+
+
+
+
+
+
+
+
+
+
+
+<img width="1917" height="904" alt="Screenshot 2026-07-27 143441" src="https://github.com/user-attachments/assets/e1267c29-c78f-4ee1-be0f-2d5c62019fbe" />
+
+
+
+
+
+
+
+
+
+<img width="1915" height="904" alt="Screenshot 2026-07-27 143531" src="https://github.com/user-attachments/assets/2390c874-4817-4c4c-a5d5-133d4d9b4dcc" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+<img width="1915" height="911" alt="Screenshot 2026-07-27 143549" src="https://github.com/user-attachments/assets/8d7ec6ef-b558-4e1d-9a25-a136fd035434" />
+
+
+
+
+
+
+
+
+
+
+
+<img width="1896" height="906" alt="Screenshot 2026-07-27 143612" src="https://github.com/user-attachments/assets/4a786439-f34c-49f5-bf60-0fa4816b38ff" />
+
+
+
+
+
+
+
+
+
+
+<img width="1918" height="1021" alt="Screenshot 2026-07-27 143703" src="https://github.com/user-attachments/assets/b1356049-98ea-4c90-972d-f6c0f1d699dc" />
+
+
+
+
+
+
+
+
+
+
+
+<img width="1919" height="900" alt="Screenshot 2026-07-27 143719" src="https://github.com/user-attachments/assets/b9f9b974-f2bd-4783-aff4-b4ea367dce0d" />
+
+
+
+
+
+
+
+
+
+
 
 ---
 

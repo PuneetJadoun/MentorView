@@ -1,9 +1,16 @@
+from __future__ import annotations
+
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
+
+if TYPE_CHECKING:
+    from app.models.question import Question
+    from app.models.response import Response
 
 
 class Form(Base):
@@ -21,4 +28,11 @@ class Form(Base):
     created_at: Mapped[datetime] = mapped_column(nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         nullable=False, server_default=func.now(), onupdate=func.now()
+    )
+
+    questions: Mapped[list["Question"]] = relationship(
+        back_populates="form", cascade="all, delete-orphan"
+    )
+    responses: Mapped[list["Response"]] = relationship(
+        back_populates="form", cascade="all, delete-orphan"
     )

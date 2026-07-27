@@ -2,7 +2,11 @@
 
 from fastapi import FastAPI
 
+from app.api import forms
+
 app = FastAPI()
+
+app.include_router(forms.router, prefix="/forms")
 
 
 @app.get("/")

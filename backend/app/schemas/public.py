@@ -42,6 +42,8 @@ class PublicFormResponse(BaseModel):
     background_color: str | None
     font_family: str | None
     dark_mode: bool
+    thank_you_title: str | None
+    thank_you_subtitle: str | None
     questions: list[PublicQuestionResponse] = Field(default_factory=list)
 
 

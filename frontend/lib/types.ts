@@ -27,6 +27,14 @@ export const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
 
 export const OPTION_BASED_TYPES: QuestionType[] = ["multiple_choice", "checkbox", "dropdown"];
 
+export const FONT_OPTIONS: { value: string; label: string }[] = [
+  { value: "Inter, sans-serif", label: "Inter (default)" },
+  { value: "Georgia, serif", label: "Georgia" },
+  { value: "'Times New Roman', serif", label: "Times New Roman" },
+  { value: "'Courier New', monospace", label: "Courier New" },
+  { value: "system-ui, sans-serif", label: "System UI" },
+];
+
 // ---- Forms ----
 
 export interface FormListItem {
@@ -42,6 +50,12 @@ export interface FormDetail {
   description: string | null;
   status: FormStatus;
   share_id: string;
+  theme_color: string | null;
+  background_color: string | null;
+  font_family: string | null;
+  dark_mode: boolean;
+  thank_you_title: string | null;
+  thank_you_subtitle: string | null;
 }
 
 export interface FormCreatePayload {
@@ -52,6 +66,12 @@ export interface FormCreatePayload {
 export interface FormUpdatePayload {
   title?: string;
   description?: string | null;
+  theme_color?: string | null;
+  background_color?: string | null;
+  font_family?: string | null;
+  dark_mode?: boolean;
+  thank_you_title?: string | null;
+  thank_you_subtitle?: string | null;
 }
 
 // ---- Questions ----
@@ -128,6 +148,8 @@ export interface PublicForm {
   background_color: string | null;
   font_family: string | null;
   dark_mode: boolean;
+  thank_you_title: string | null;
+  thank_you_subtitle: string | null;
   questions: PublicQuestion[];
 }
 

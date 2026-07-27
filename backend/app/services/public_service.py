@@ -48,6 +48,8 @@ def get_public_form(db: Session, share_id: str) -> PublicFormResponse:
         background_color=form.background_color,
         font_family=form.font_family,
         dark_mode=form.dark_mode,
+        thank_you_title=form.thank_you_title,
+        thank_you_subtitle=form.thank_you_subtitle,
         questions=[_build_public_question(q) for q in questions],
     )
 

@@ -25,6 +25,8 @@ class Form(Base):
     background_color: Mapped[str | None] = mapped_column(nullable=True)
     font_family: Mapped[str | None] = mapped_column(nullable=True)
     dark_mode: Mapped[bool] = mapped_column(nullable=False, default=False)
+    thank_you_title: Mapped[str | None] = mapped_column(nullable=True)
+    thank_you_subtitle: Mapped[str | None] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         nullable=False, server_default=func.now(), onupdate=func.now()

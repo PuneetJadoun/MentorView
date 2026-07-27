@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import {
   DndContext,
   DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
   KeyboardSensor,
   PointerSensor,
   closestCenter,
@@ -26,12 +29,21 @@ interface QuestionListProps {
 }
 
 export function QuestionList({ questions, selectedId, onSelect, onDelete, onReorder }: QuestionListProps) {
+  const [activeId, setActiveId] = useState<number | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
+  const activeQuestion = questions.find((q) => q.id === activeId) ?? null;
+  const activeIndex = activeQuestion ? questions.indexOf(activeQuestion) : -1;
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(Number(event.active.id));
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveId(null);
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
@@ -46,7 +58,13 @@ export function QuestionList({ questions, selectedId, onSelect, onDelete, onReor
   };
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragCancel={() => setActiveId(null)}
+    >
       <SortableContext items={questions.map((q) => q.id)} strategy={verticalListSortingStrategy}>
         {questions.map((question, index) => (
           <QuestionCard
@@ -59,6 +77,20 @@ export function QuestionList({ questions, selectedId, onSelect, onDelete, onReor
           />
         ))}
       </SortableContext>
+
+      <DragOverlay>
+        {activeQuestion && (
+          <div className="rotate-2 rounded-[var(--radius-md)] bg-[var(--color-surface)] shadow-[var(--shadow-popover)] ring-1 ring-[var(--color-border)]">
+            <QuestionCard
+              question={activeQuestion}
+              index={activeIndex}
+              isSelected={activeQuestion.id === selectedId}
+              onSelect={() => {}}
+              onDelete={() => {}}
+            />
+          </div>
+        )}
+      </DragOverlay>
     </DndContext>
   );
 }

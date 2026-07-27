@@ -2,26 +2,32 @@
 
 ## Overview
 
-The application uses **SQLite** as the database.
+The application uses **SQLite** as the primary relational database. The schema is designed using a normalized relational model to efficiently support form creation, publishing, response collection, and analytics while remaining lightweight and easy to maintain.
 
-The schema is designed to support:
+The database supports both the required assignment features and selected optional extensions.
 
-### Core Features
+---
+
+# Core Features Supported
 
 - Form Builder
-- Form CRUD
-- Publish / Unpublish
+- Form Management (CRUD)
+- Publish / Unpublish Forms
 - Shareable Public Forms
 - Multiple Question Types
-- Responses
-- Summary Statistics
+- One-to-One & One-to-Many Relationships
+- Response Collection
+- Response Analytics
+- Drag-and-Drop Question Ordering
 
-### Bonus Features
+---
 
-- Logic Jumps / Conditional Branching
+# Bonus Features Supported
+
+- Conditional Logic (Logic Jumps)
 - Custom Themes
 - Dark Mode
-- Export Responses as CSV
+- CSV Export
 - Partial Response Tracking
 - File Upload Question Type
 
@@ -30,103 +36,112 @@ The schema is designed to support:
 # Entity Relationship Diagram
 
 ```text
-forms
-   │
-   ├──────────────┐
-   │              │
-   ▼              ▼
-questions      responses
-   │              │
-   ▼              ▼
-question_options answers
-   │
-   ▼
-logic_rules
+                 +-------------+
+                 |    forms    |
+                 +-------------+
+                        │
+         ┌──────────────┴──────────────┐
+         ▼                             ▼
++----------------+            +----------------+
+|   questions    |            |   responses    |
++----------------+            +----------------+
+        │                             │
+        ▼                             ▼
++------------------+          +----------------+
+| question_options |          |    answers     |
++------------------+          +----------------+
+        │
+        ▼
++----------------+
+|  logic_rules   |
++----------------+
 ```
 
 ---
 
-# Tables
+# Database Tables
 
 ## 1. forms
 
-Stores all created forms.
+Stores metadata for every form created by the creator.
 
 | Column | Type | Description |
 |---------|------|-------------|
-| id | INTEGER PK | Form ID |
+| id | INTEGER (PK) | Unique form identifier |
 | title | TEXT | Form title |
-| description | TEXT | Optional form description |
-| status | TEXT | draft / published |
-| share_id | TEXT UNIQUE | Public shareable identifier |
-| theme_color | TEXT | Theme accent color |
-| background_color | TEXT | Background color |
+| description | TEXT | Optional description |
+| status | TEXT | `draft` or `published` |
+| share_id | TEXT (UNIQUE) | Public share identifier |
+| theme_color | TEXT | Theme accent colour |
+| background_color | TEXT | Background colour |
 | font_family | TEXT | Selected font |
-| dark_mode | BOOLEAN | Enable dark mode |
+| dark_mode | BOOLEAN | Dark mode enabled |
 | created_at | DATETIME | Creation timestamp |
-| updated_at | DATETIME | Last updated timestamp |
+| updated_at | DATETIME | Last modification timestamp |
 
 ---
 
 ## 2. questions
 
-Stores all questions belonging to a form.
+Stores every question belonging to a form.
 
 | Column | Type | Description |
 |---------|------|-------------|
-| id | INTEGER PK | Question ID |
-| form_id | INTEGER FK | Parent form |
-| title | TEXT | Question text |
-| description | TEXT | Help text |
+| id | INTEGER (PK) | Unique question identifier |
+| form_id | INTEGER (FK) | Parent form |
+| title | TEXT | Question title |
+| description | TEXT | Optional help text |
 | type | TEXT | Question type |
-| required | BOOLEAN | Required question |
-| position | INTEGER | Display order |
-| allow_multiple_files | BOOLEAN | File upload setting (Bonus) |
+| required | BOOLEAN | Required flag |
+| position | INTEGER | Question order |
+| allow_multiple_files | BOOLEAN | Enables multiple uploads (Bonus) |
 
 ### Supported Question Types
 
-- SHORT_TEXT
-- LONG_TEXT
-- EMAIL
-- NUMBER
-- MULTIPLE_CHOICE
-- DROPDOWN
-- YES_NO
-- RATING
-- FILE_UPLOAD *(Bonus)*
+- Short Text
+- Long Text
+- Email
+- Number
+- Date
+- Yes / No
+- Multiple Choice
+- Dropdown
+- Rating
+- File Upload *(Bonus)*
 
 ---
 
 ## 3. question_options
 
-Stores selectable options.
+Stores selectable options for questions that require predefined choices.
 
-Used only by:
+Applicable Question Types:
 
 - Multiple Choice
 - Dropdown
+- Rating (if implemented)
 
 | Column | Type | Description |
 |---------|------|-------------|
-| id | INTEGER PK | Option ID |
-| question_id | INTEGER FK | Parent question |
+| id | INTEGER (PK) | Option identifier |
+| question_id | INTEGER (FK) | Parent question |
 | option_text | TEXT | Option label |
 | position | INTEGER | Display order |
 
 ---
 
-## 4. logic_rules (Bonus)
+## 4. logic_rules *(Bonus)*
 
-Supports conditional branching.
+Supports conditional branching between questions.
 
 | Column | Type | Description |
 |---------|------|-------------|
-| id | INTEGER PK | Rule ID |
-| question_id | INTEGER FK | Source question |
-| option_id | INTEGER FK | Selected option |
-| target_question_id | INTEGER FK | Next question |
+| id | INTEGER (PK) | Rule identifier |
+| question_id | INTEGER (FK) | Source question |
+| option_id | INTEGER (FK) | Trigger option |
+| target_question_id | INTEGER (FK) | Destination question |
 
-Example:
+### Example
 
 ```
 Question:
@@ -134,12 +149,12 @@ Do you own a car?
 
 ↓
 
-Option:
+Selected Option:
 Yes
 
 ↓
 
-Jump to:
+Jump To:
 Car Details
 ```
 
@@ -147,58 +162,64 @@ Car Details
 
 ## 5. responses
 
-Stores every submitted form.
+Stores every submitted response for a form.
 
 | Column | Type | Description |
 |---------|------|-------------|
-| id | INTEGER PK | Response ID |
-| form_id | INTEGER FK | Parent form |
-| completed | BOOLEAN | Completed or partial |
-| progress_percentage | INTEGER | Completion percentage |
+| id | INTEGER (PK) | Response identifier |
+| form_id | INTEGER (FK) | Parent form |
+| completed | BOOLEAN | Completion status |
+| progress_percentage | INTEGER | Progress (Bonus) |
 | started_at | DATETIME | Response start time |
-| submitted_at | DATETIME | Submission time |
+| submitted_at | DATETIME | Submission timestamp |
 
 Used for:
 
 - Response History
+- Completion Statistics
 - Partial Responses *(Bonus)*
-- Completion Rate *(Bonus)*
 
 ---
 
 ## 6. answers
 
-Stores answers for every question.
+Stores the answer for every question within a response.
 
 | Column | Type | Description |
 |---------|------|-------------|
-| id | INTEGER PK | Answer ID |
-| response_id | INTEGER FK | Parent response |
-| question_id | INTEGER FK | Parent question |
-| answer_value | TEXT | Text/Email/Number/Rating/Yes-No answer |
-| file_path | TEXT | Uploaded file path *(Bonus)* |
+| id | INTEGER (PK) | Answer identifier |
+| response_id | INTEGER (FK) | Parent response |
+| question_id | INTEGER (FK) | Parent question |
+| answer_value | TEXT | User answer |
+| file_path | TEXT | Uploaded file location *(Bonus)* |
 
-Examples:
+### Example Values
 
-Short Text
+**Short Text**
 
 ```
 Puneet Kumar
 ```
 
-Rating
+**Email**
+
+```
+puneet@example.com
+```
+
+**Rating**
 
 ```
 5
 ```
 
-Yes / No
+**Yes / No**
 
 ```
 true
 ```
 
-File Upload
+**File Upload**
 
 ```
 uploads/resume.pdf
@@ -211,18 +232,18 @@ uploads/resume.pdf
 ## Form → Questions
 
 ```
-1 Form
-      │
-      ▼
+One Form
+    │
+    ▼
 Many Questions
 ```
 
 ---
 
-## Question → Options
+## Question → Question Options
 
 ```
-1 Question
+One Question
       │
       ▼
 Many Options
@@ -233,7 +254,7 @@ Many Options
 ## Form → Responses
 
 ```
-1 Form
+One Form
       │
       ▼
 Many Responses
@@ -244,7 +265,7 @@ Many Responses
 ## Response → Answers
 
 ```
-1 Response
+One Response
       │
       ▼
 Many Answers
@@ -255,7 +276,7 @@ Many Answers
 ## Question → Logic Rules
 
 ```
-1 Question
+One Question
       │
       ▼
 Many Logic Rules
@@ -263,28 +284,66 @@ Many Logic Rules
 
 ---
 
-# Design Decisions
+# Schema Design Decisions
 
-- SQLite chosen as required by the assignment.
-- Normalized schema to avoid redundant data.
-- Generic `answer_value` supports all primitive question types.
-- Separate `question_options` table avoids storing arrays.
-- `logic_rules` keeps conditional branching modular.
-- Theme configuration stored per form.
-- Partial response tracking stored in the `responses` table.
-- File uploads reuse the `answers` table using `file_path`.
+### Normalized Database Design
+
+The schema is normalized to reduce redundancy and maintain data consistency.
+
+### Flexible Answer Storage
+
+A generic `answer_value` column is used to support multiple primitive question types without requiring separate tables.
+
+### Separate Options Table
+
+Question options are stored independently, allowing unlimited choices while avoiding array-based storage.
+
+### Ordered Questions
+
+The `position` column enables drag-and-drop ordering within the builder.
+
+### Public Sharing
+
+Each published form receives a unique `share_id`, allowing anonymous respondents to access forms without authentication.
+
+### Conditional Logic
+
+Logic rules are isolated into a dedicated table, making branching extensible and maintainable.
+
+### Theme Support
+
+Visual customization is stored at the form level, allowing each form to maintain independent styling.
+
+### Partial Responses
+
+Progress tracking is stored within the `responses` table, making resume functionality straightforward to implement.
+
+### File Uploads
+
+Uploaded file paths are stored alongside normal answers, avoiding unnecessary additional tables.
 
 ---
 
 # Tables Summary
 
 | Table | Purpose |
-|--------|---------|
-| forms | Form metadata |
-| questions | Questions belonging to a form |
-| question_options | Options for MCQ & Dropdown |
-| logic_rules | Conditional branching |
-| responses | Submitted responses |
-| answers | Individual answers |
+|---------|---------|
+| forms | Stores form metadata and publishing information |
+| questions | Stores questions belonging to a form |
+| question_options | Stores selectable options |
+| logic_rules | Stores conditional branching rules |
+| responses | Stores submitted responses |
+| answers | Stores individual answers |
 
-**Total Tables:** **6**
+---
+
+# Summary
+
+- **Database:** SQLite
+- **Total Tables:** 6
+- **Relationships:** One-to-Many
+- **ORM:** SQLAlchemy 2.0
+- **Migration Tool:** Alembic
+- **Normalization:** Third Normal Form (3NF)
+
+This schema provides a scalable foundation for the Typeform Clone while remaining simple enough for local development and future feature expansion.

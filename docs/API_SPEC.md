@@ -1,25 +1,45 @@
-# API Spec
-
-> Placeholder — to be filled in with: REST endpoint list (forms, questions, responses), request/response payloads, status codes, and validation rules.
-
-
 # API Specification
 
 ## Overview
 
-This document defines the REST API contract for the **Typeform Clone**.
+This document describes the REST API for the **Typeform Clone** built with **FastAPI**.
 
-**Base URL**
+The API enables creators to manage forms, build questionnaires, publish forms through shareable links, collect responses, and view submissions.
+
+**Content-Type**
 
 ```
-/api
+application/json
 ```
-
-All requests and responses use **JSON** unless otherwise specified.
 
 ---
 
-# Forms
+# Base URL
+
+Development
+
+```
+http://localhost:8000
+```
+
+Production
+
+```
+https://your-backend-url
+```
+
+---
+
+# Authentication
+
+Authentication is intentionally simplified for this assignment.
+
+- Creator endpoints assume a default logged-in creator.
+- Published forms can be filled without authentication.
+
+---
+
+# Forms API
 
 ## Create Form
 
@@ -29,8 +49,8 @@ All requests and responses use **JSON** unless otherwise specified.
 
 ```json
 {
-  "title": "Untitled Form",
-  "description": "Sample description"
+  "title": "Customer Feedback",
+  "description": "Help us improve our service."
 }
 ```
 
@@ -40,7 +60,8 @@ All requests and responses use **JSON** unless otherwise specified.
 {
   "id": 1,
   "share_id": "abc123xyz",
-  "message": "Form created successfully"
+  "title": "Customer Feedback",
+  "status": "draft"
 }
 ```
 
@@ -50,18 +71,7 @@ All requests and responses use **JSON** unless otherwise specified.
 
 **GET** `/forms`
 
-### Response
-
-```json
-[
-  {
-    "id": 1,
-    "title": "Customer Feedback",
-    "status": "draft",
-    "updated_at": "2026-07-27T10:00:00Z"
-  }
-]
-```
+Returns all forms.
 
 ---
 
@@ -69,17 +79,7 @@ All requests and responses use **JSON** unless otherwise specified.
 
 **GET** `/forms/{form_id}`
 
-### Response
-
-```json
-{
-  "id": 1,
-  "title": "Customer Feedback",
-  "description": "Survey",
-  "status": "draft",
-  "share_id": "abc123xyz"
-}
-```
+Returns complete information for a single form.
 
 ---
 
@@ -87,22 +87,7 @@ All requests and responses use **JSON** unless otherwise specified.
 
 **PUT** `/forms/{form_id}`
 
-### Request
-
-```json
-{
-  "title": "Updated Title",
-  "description": "Updated Description"
-}
-```
-
-### Response
-
-```json
-{
-  "message": "Form updated successfully"
-}
-```
+Updates the form title or description.
 
 ---
 
@@ -110,13 +95,7 @@ All requests and responses use **JSON** unless otherwise specified.
 
 **DELETE** `/forms/{form_id}`
 
-### Response
-
-```json
-{
-  "message": "Form deleted successfully"
-}
-```
+Deletes the form and all related questions, options and responses.
 
 ---
 
@@ -124,11 +103,13 @@ All requests and responses use **JSON** unless otherwise specified.
 
 **POST** `/forms/{form_id}/publish`
 
-### Response
+Publishes the form and generates a shareable link.
+
+Example response
 
 ```json
 {
-  "share_url": "https://your-domain.com/f/abc123xyz"
+  "share_url": "https://your-domain.com/form/abc123xyz"
 }
 ```
 
@@ -138,42 +119,48 @@ All requests and responses use **JSON** unless otherwise specified.
 
 **POST** `/forms/{form_id}/unpublish`
 
-### Response
-
-```json
-{
-  "message": "Form unpublished successfully"
-}
-```
+Returns the form to Draft mode.
 
 ---
 
-# Questions
+# Questions API
 
-## Add Question
+## Create Question
 
 **POST** `/forms/{form_id}/questions`
 
-### Request
+Creates a question inside a form.
+
+Supported question types
+
+- Short Text
+- Long Text
+- Email
+- Number
+- Date
+- Yes / No
+- Multiple Choice
+- Dropdown
+- Rating
+
+Example
 
 ```json
 {
   "title": "What is your name?",
-  "description": "",
   "type": "SHORT_TEXT",
   "required": true,
   "position": 1
 }
 ```
 
-### Response
+---
 
-```json
-{
-  "id": 10,
-  "message": "Question added successfully"
-}
-```
+## Get Questions
+
+**GET** `/forms/{form_id}/questions`
+
+Returns all questions ordered by position.
 
 ---
 
@@ -181,22 +168,7 @@ All requests and responses use **JSON** unless otherwise specified.
 
 **PUT** `/questions/{question_id}`
 
-### Request
-
-```json
-{
-  "title": "Updated Question",
-  "required": false
-}
-```
-
-### Response
-
-```json
-{
-  "message": "Question updated successfully"
-}
-```
+Updates any editable question field.
 
 ---
 
@@ -204,13 +176,7 @@ All requests and responses use **JSON** unless otherwise specified.
 
 **DELETE** `/questions/{question_id}`
 
-### Response
-
-```json
-{
-  "message": "Question deleted successfully"
-}
-```
+Deletes a question.
 
 ---
 
@@ -218,53 +184,17 @@ All requests and responses use **JSON** unless otherwise specified.
 
 **PATCH** `/forms/{form_id}/questions/reorder`
 
-### Request
-
-```json
-[
-  {
-    "question_id": 3,
-    "position": 1
-  },
-  {
-    "question_id": 1,
-    "position": 2
-  }
-]
-```
-
-### Response
-
-```json
-{
-  "message": "Questions reordered successfully"
-}
-```
+Updates the ordering of questions.
 
 ---
 
-# Question Options
+# Question Options API
 
 ## Add Option
 
 **POST** `/questions/{question_id}/options`
 
-### Request
-
-```json
-{
-  "option_text": "Python"
-}
-```
-
-### Response
-
-```json
-{
-  "id": 5,
-  "message": "Option added successfully"
-}
-```
+Creates an option for Multiple Choice, Dropdown or Rating questions.
 
 ---
 
@@ -272,21 +202,7 @@ All requests and responses use **JSON** unless otherwise specified.
 
 **PUT** `/options/{option_id}`
 
-### Request
-
-```json
-{
-  "option_text": "Java"
-}
-```
-
-### Response
-
-```json
-{
-  "message": "Option updated successfully"
-}
-```
+Updates option text.
 
 ---
 
@@ -294,127 +210,34 @@ All requests and responses use **JSON** unless otherwise specified.
 
 **DELETE** `/options/{option_id}`
 
-### Response
-
-```json
-{
-  "message": "Option deleted successfully"
-}
-```
+Deletes an option.
 
 ---
 
-# Logic Rules (Bonus)
+# Public Form API
 
-## Create Logic Rule
-
-**POST** `/questions/{question_id}/logic`
-
-### Request
-
-```json
-{
-  "option_id": 3,
-  "target_question_id": 8
-}
-```
-
-### Response
-
-```json
-{
-  "message": "Logic rule created successfully"
-}
-```
-
----
-
-## Update Logic Rule
-
-**PUT** `/logic/{logic_id}`
-
-### Request
-
-```json
-{
-  "target_question_id": 10
-}
-```
-
-### Response
-
-```json
-{
-  "message": "Logic rule updated successfully"
-}
-```
-
----
-
-## Delete Logic Rule
-
-**DELETE** `/logic/{logic_id}`
-
-### Response
-
-```json
-{
-  "message": "Logic rule deleted successfully"
-}
-```
-
----
-
-# Themes (Bonus)
-
-## Update Theme
-
-**PUT** `/forms/{form_id}/theme`
-
-### Request
-
-```json
-{
-  "theme_color": "#2563EB",
-  "background_color": "#FFFFFF",
-  "font_family": "Inter",
-  "dark_mode": true
-}
-```
-
-### Response
-
-```json
-{
-  "message": "Theme updated successfully"
-}
-```
-
----
-
-# Public Form
-
-## Get Public Form
+## Get Published Form
 
 **GET** `/public/{share_id}`
 
-### Response
+Loads a published form for respondents.
 
-```json
-{
-  "id": 1,
-  "title": "Customer Feedback",
-  "questions": []
-}
-```
+Returns
+
+- Form title
+- Description
+- Ordered questions
+- Question options
 
 ---
 
-## Submit Form
+## Submit Response
 
 **POST** `/public/{share_id}/submit`
 
-### Request
+Stores a completed response.
+
+Example
 
 ```json
 {
@@ -422,130 +245,36 @@ All requests and responses use **JSON** unless otherwise specified.
     {
       "question_id": 1,
       "answer": "John Doe"
-    },
-    {
-      "question_id": 2,
-      "answer": "Yes"
     }
   ]
 }
 ```
 
-### Response
-
-```json
-{
-  "response_id": 12,
-  "message": "Response submitted successfully"
-}
-```
-
 ---
 
-## Save Partial Response (Bonus)
+# Responses API
 
-**POST** `/public/{share_id}/save`
-
-### Request
-
-```json
-{
-  "answers": [
-    {
-      "question_id": 1,
-      "answer": "John"
-    }
-  ],
-  "progress_percentage": 35
-}
-```
-
-### Response
-
-```json
-{
-  "response_id": 12,
-  "message": "Progress saved successfully"
-}
-```
-
----
-
-# Responses
-
-## Get All Responses
+## Get Form Responses
 
 **GET** `/forms/{form_id}/responses`
 
-### Response
-
-```json
-[
-  {
-    "response_id": 1,
-    "submitted_at": "2026-07-27T10:30:00Z",
-    "completed": true
-  }
-]
-```
+Returns all submitted responses for a form.
 
 ---
 
-## Get Single Response
+## Get Response Details
 
 **GET** `/responses/{response_id}`
 
-### Response
-
-```json
-{
-  "response_id": 1,
-  "answers": [
-    {
-      "question": "Name",
-      "answer": "John Doe"
-    }
-  ]
-}
-```
+Returns every answer belonging to a response.
 
 ---
 
-## Export Responses as CSV (Bonus)
+## Export CSV *(Bonus)*
 
 **GET** `/forms/{form_id}/responses/export`
 
-### Response
-
-Returns a downloadable CSV file.
-
----
-
-# File Upload (Bonus)
-
-## Upload File
-
-**POST** `/upload`
-
-### Content-Type
-
-```
-multipart/form-data
-```
-
-### Request
-
-```
-file=<binary file>
-```
-
-### Response
-
-```json
-{
-  "file_path": "/uploads/resume.pdf"
-}
-```
+Downloads all responses as a CSV file.
 
 ---
 
@@ -553,12 +282,81 @@ file=<binary file>
 
 | Code | Description |
 |------|-------------|
-| 200 | Success |
-| 201 | Resource Created |
-| 400 | Bad Request |
-| 404 | Resource Not Found |
-| 422 | Validation Error |
-| 500 | Internal Server Error |
+|200|Success|
+|201|Resource Created|
+|204|Resource Deleted|
+|400|Bad Request|
+|404|Resource Not Found|
+|422|Validation Error|
+|500|Internal Server Error|
+
+---
+
+# Validation Rules
+
+## Forms
+
+- Title is required
+- Description is optional
+
+---
+
+## Questions
+
+- Question title cannot be empty
+- Position must be unique within a form
+- Supported question types only
+
+---
+
+## Responses
+
+- Required questions must be answered
+- Email fields require a valid email address
+- Number questions accept numeric values only
+
+---
+
+# API Design
+
+The backend follows a layered architecture.
+
+```
+Client
+    │
+    ▼
+FastAPI Router
+    │
+    ▼
+Service Layer
+    │
+    ▼
+Repository Layer
+    │
+    ▼
+SQLAlchemy ORM
+    │
+    ▼
+SQLite Database
+```
+
+---
+
+# Interactive API Documentation
+
+FastAPI automatically generates Swagger documentation.
+
+Development
+
+```
+http://localhost:8000/docs
+```
+
+Production
+
+```
+https://your-backend-url/docs
+```
 
 ---
 
@@ -566,28 +364,33 @@ file=<binary file>
 
 | Method | Endpoint | Description |
 |---------|----------|-------------|
-| POST | `/forms` | Create form |
-| GET | `/forms` | Get all forms |
-| GET | `/forms/{id}` | Get single form |
-| PUT | `/forms/{id}` | Update form |
-| DELETE | `/forms/{id}` | Delete form |
-| POST | `/forms/{id}/publish` | Publish form |
-| POST | `/forms/{id}/unpublish` | Unpublish form |
-| POST | `/forms/{id}/questions` | Add question |
-| PUT | `/questions/{id}` | Update question |
-| DELETE | `/questions/{id}` | Delete question |
-| PATCH | `/forms/{id}/questions/reorder` | Reorder questions |
-| POST | `/questions/{id}/options` | Add option |
-| PUT | `/options/{id}` | Update option |
-| DELETE | `/options/{id}` | Delete option |
-| POST | `/questions/{id}/logic` | Create logic rule |
-| PUT | `/logic/{id}` | Update logic rule |
-| DELETE | `/logic/{id}` | Delete logic rule |
-| PUT | `/forms/{id}/theme` | Update theme |
-| GET | `/public/{share_id}` | Load public form |
-| POST | `/public/{share_id}/submit` | Submit response |
-| POST | `/public/{share_id}/save` | Save partial response |
-| GET | `/forms/{id}/responses` | Get responses |
-| GET | `/responses/{id}` | Get single response |
-| GET | `/forms/{id}/responses/export` | Export CSV |
-| POST | `/upload` | Upload file |
+|POST|`/forms`|Create form|
+|GET|`/forms`|List forms|
+|GET|`/forms/{id}`|Get form|
+|PUT|`/forms/{id}`|Update form|
+|DELETE|`/forms/{id}`|Delete form|
+|POST|`/forms/{id}/publish`|Publish form|
+|POST|`/forms/{id}/unpublish`|Unpublish form|
+|POST|`/forms/{id}/questions`|Create question|
+|GET|`/forms/{id}/questions`|List questions|
+|PUT|`/questions/{id}`|Update question|
+|DELETE|`/questions/{id}`|Delete question|
+|PATCH|`/forms/{id}/questions/reorder`|Reorder questions|
+|POST|`/questions/{id}/options`|Create option|
+|PUT|`/options/{id}`|Update option|
+|DELETE|`/options/{id}`|Delete option|
+|GET|`/public/{share_id}`|Load public form|
+|POST|`/public/{share_id}/submit`|Submit response|
+|GET|`/forms/{id}/responses`|List responses|
+|GET|`/responses/{id}`|View response|
+|GET|`/forms/{id}/responses/export`|Export CSV *(Bonus)*|
+
+---
+
+## Notes
+
+- RESTful API design
+- JSON request/response format
+- SQLite persistence using SQLAlchemy
+- Interactive Swagger documentation available at `/docs`
+- Clean separation of Router → Service → Repository → Database layers

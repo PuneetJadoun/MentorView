@@ -53,21 +53,23 @@ export function OptionsEditor({ questionId, options, onOptionsChange }: OptionsE
 
   return (
     <div>
-      <label className="mb-2 block text-sm font-medium text-[var(--color-text)]">Options</label>
+      <label className="mb-3 block text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
+        Options
+      </label>
       <div className="flex flex-col gap-2">
         {options.map((option, i) => (
-          <div key={option.id} className="flex items-center gap-2">
+          <div key={option.id} className="group flex items-center gap-2">
             <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-[var(--color-border)] text-xs font-semibold text-[var(--color-text-muted)]">
               {String.fromCharCode(65 + i)}
             </span>
             <input
               defaultValue={option.option_text}
               onBlur={(e) => updateOptionText(option.id, e.target.value)}
-              className="flex-1 rounded-[var(--radius-md)] border border-[var(--color-border)] px-3 py-2 text-sm outline-none focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+              className="flex-1 rounded-[var(--radius-md)] border border-[var(--color-border)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
             />
             <button
               onClick={() => deleteOption(option.id)}
-              className="shrink-0 rounded-full p-2 text-neutral-400 hover:bg-red-50 hover:text-[var(--color-danger)] cursor-pointer"
+              className="shrink-0 rounded-full p-2 text-[var(--color-text-faint)] opacity-0 transition-opacity hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger)] group-hover:opacity-100 cursor-pointer"
               aria-label="Delete option"
             >
               <Trash2 className="size-4" />
@@ -77,7 +79,7 @@ export function OptionsEditor({ questionId, options, onOptionsChange }: OptionsE
       </div>
 
       <div className="mt-2 flex items-center gap-2">
-        <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-dashed border-[var(--color-border)] text-xs font-semibold text-neutral-300">
+        <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-dashed border-[var(--color-border-strong)] text-xs font-semibold text-[var(--color-text-faint)]">
           {String.fromCharCode(65 + options.length)}
         </span>
         <input
@@ -90,12 +92,12 @@ export function OptionsEditor({ questionId, options, onOptionsChange }: OptionsE
             }
           }}
           placeholder="Add an option..."
-          className="flex-1 rounded-[var(--radius-md)] border border-dashed border-[var(--color-border)] px-3 py-2 text-sm outline-none focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+          className="flex-1 rounded-[var(--radius-md)] border border-dashed border-[var(--color-border-strong)] px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
         />
         <button
           onClick={addOption}
           disabled={adding || !newOptionText.trim()}
-          className="shrink-0 rounded-full p-2 text-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 disabled:opacity-40 cursor-pointer"
+          className="shrink-0 rounded-full p-2 text-[var(--color-accent)] hover:bg-[var(--color-accent-soft)] disabled:opacity-40 cursor-pointer"
           aria-label="Add option"
         >
           <Plus className="size-4" />

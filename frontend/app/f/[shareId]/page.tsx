@@ -45,6 +45,12 @@ export default function PublicFormPage({
       formTitle={form.title}
       formDescription={form.description}
       questions={form.questions}
+      accentColor={form.theme_color}
+      backgroundColor={form.background_color}
+      fontFamily={form.font_family}
+      darkMode={form.dark_mode}
+      thankYouTitle={form.thank_you_title}
+      thankYouSubtitle={form.thank_you_subtitle}
       onSubmit={async (answers) => {
         try {
           await publicApi.submit(shareId, answers);

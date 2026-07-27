@@ -10,15 +10,19 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon: Icon, title, description, action }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-[var(--radius-lg)] border border-dashed border-[var(--color-border)] px-6 py-16 text-center">
-      <div className="flex size-12 items-center justify-center rounded-full bg-neutral-100">
-        <Icon className="size-6 text-[var(--color-text-muted)]" />
+    <div className="animate-fade-in flex flex-col items-center justify-center gap-4 rounded-[var(--radius-xl)] border border-dashed border-[var(--color-border-strong)] bg-[var(--color-bg-subtle)]/40 px-6 py-20 text-center">
+      <div className="flex size-14 items-center justify-center rounded-full bg-[var(--color-surface)] shadow-[var(--shadow-card)] ring-1 ring-[var(--color-border)]">
+        <Icon className="size-6 text-[var(--color-text-muted)]" strokeWidth={1.75} />
       </div>
-      <h3 className="text-base font-semibold text-[var(--color-text)]">{title}</h3>
-      {description && (
-        <p className="max-w-sm text-sm text-[var(--color-text-muted)]">{description}</p>
-      )}
-      {action && <div className="mt-2">{action}</div>}
+      <div>
+        <h3 className="text-base font-semibold text-[var(--color-text)]">{title}</h3>
+        {description && (
+          <p className="mx-auto mt-1.5 max-w-sm text-sm text-[var(--color-text-muted)]">
+            {description}
+          </p>
+        )}
+      </div>
+      {action && <div className="mt-1">{action}</div>}
     </div>
   );
 }

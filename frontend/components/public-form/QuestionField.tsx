@@ -1,6 +1,8 @@
 "use client";
 
 import { RefObject } from "react";
+import { motion } from "framer-motion";
+import { Check } from "lucide-react";
 import type { QuestionType } from "@/lib/types";
 
 interface FieldOption {
@@ -22,7 +24,7 @@ interface QuestionFieldProps {
 }
 
 const baseInputClass =
-  "w-full border-b-2 border-[var(--color-border)] bg-transparent py-3 text-xl outline-none focus:border-[var(--color-accent)] transition-colors";
+  "w-full border-b-2 border-[var(--color-border-strong)] bg-transparent py-3 text-2xl sm:text-3xl font-medium outline-none focus:border-[var(--color-accent)] transition-colors placeholder:text-[var(--color-text-faint)] placeholder:font-normal";
 
 export function QuestionField({ question, value, onChange, inputRef }: QuestionFieldProps) {
   switch (question.type) {
@@ -47,7 +49,7 @@ export function QuestionField({ question, value, onChange, inputRef }: QuestionF
           ref={inputRef as RefObject<HTMLTextAreaElement>}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          rows={4}
+          rows={3}
           placeholder="Type your answer here..."
           className={`${baseInputClass} resize-none`}
         />
@@ -57,18 +59,19 @@ export function QuestionField({ question, value, onChange, inputRef }: QuestionF
       return (
         <div className="flex gap-3">
           {["Yes", "No"].map((option) => (
-            <button
+            <motion.button
               key={option}
               type="button"
+              whileTap={{ scale: 0.97 }}
               onClick={() => onChange(option)}
               className={`flex-1 cursor-pointer rounded-[var(--radius-md)] border-2 px-6 py-4 text-lg font-medium transition-colors ${
                 value === option
-                  ? "border-[var(--color-accent)] bg-[var(--color-accent)]/5 text-[var(--color-accent)]"
-                  : "border-[var(--color-border)] hover:border-neutral-300"
+                  ? "border-[var(--color-accent)] bg-[var(--color-accent-soft)] text-[var(--color-accent)]"
+                  : "border-[var(--color-border)] hover:border-[var(--color-border-strong)]"
               }`}
             >
               {option}
-            </button>
+            </motion.button>
           ))}
         </div>
       );
@@ -77,21 +80,28 @@ export function QuestionField({ question, value, onChange, inputRef }: QuestionF
       return (
         <div className="flex flex-col gap-2.5">
           {question.options.map((option, i) => (
-            <button
+            <motion.button
               key={option.id}
               type="button"
+              whileTap={{ scale: 0.98 }}
               onClick={() => onChange(option.option_text)}
-              className={`flex cursor-pointer items-center gap-3 rounded-[var(--radius-md)] border-2 px-4 py-3 text-left text-base transition-colors ${
+              className={`flex cursor-pointer items-center gap-3 rounded-[var(--radius-md)] border-2 px-4 py-3.5 text-left text-base transition-colors ${
                 value === option.option_text
-                  ? "border-[var(--color-accent)] bg-[var(--color-accent)]/5"
-                  : "border-[var(--color-border)] hover:border-neutral-300"
+                  ? "border-[var(--color-accent)] bg-[var(--color-accent-soft)]"
+                  : "border-[var(--color-border)] hover:border-[var(--color-border-strong)]"
               }`}
             >
-              <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-current text-xs font-semibold">
+              <span
+                className={`flex size-7 shrink-0 items-center justify-center rounded-md border text-xs font-semibold ${
+                  value === option.option_text
+                    ? "border-[var(--color-accent)] text-[var(--color-accent)]"
+                    : "border-[var(--color-border-strong)] text-[var(--color-text-muted)]"
+                }`}
+              >
                 {String.fromCharCode(65 + i)}
               </span>
               {option.option_text}
-            </button>
+            </motion.button>
           ))}
         </div>
       );
@@ -109,27 +119,28 @@ export function QuestionField({ question, value, onChange, inputRef }: QuestionF
           {question.options.map((option) => {
             const isSelected = selected.includes(option.option_text);
             return (
-              <button
+              <motion.button
                 key={option.id}
                 type="button"
+                whileTap={{ scale: 0.98 }}
                 onClick={() => toggle(option.option_text)}
-                className={`flex cursor-pointer items-center gap-3 rounded-[var(--radius-md)] border-2 px-4 py-3 text-left text-base transition-colors ${
+                className={`flex cursor-pointer items-center gap-3 rounded-[var(--radius-md)] border-2 px-4 py-3.5 text-left text-base transition-colors ${
                   isSelected
-                    ? "border-[var(--color-accent)] bg-[var(--color-accent)]/5"
-                    : "border-[var(--color-border)] hover:border-neutral-300"
+                    ? "border-[var(--color-accent)] bg-[var(--color-accent-soft)]"
+                    : "border-[var(--color-border)] hover:border-[var(--color-border-strong)]"
                 }`}
               >
                 <span
                   className={`flex size-5 shrink-0 items-center justify-center rounded border-2 ${
                     isSelected
                       ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
-                      : "border-[var(--color-border)]"
+                      : "border-[var(--color-border-strong)]"
                   }`}
                 >
-                  {isSelected && <span className="size-2 rounded-sm bg-white" />}
+                  {isSelected && <Check className="size-3 text-white" strokeWidth={3} />}
                 </span>
                 {option.option_text}
-              </button>
+              </motion.button>
             );
           })}
         </div>
@@ -141,7 +152,7 @@ export function QuestionField({ question, value, onChange, inputRef }: QuestionF
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={`${baseInputClass} cursor-pointer`}
+          className={`${baseInputClass} cursor-pointer !bg-[var(--color-surface)]`}
         >
           <option value="" disabled>
             Choose an option

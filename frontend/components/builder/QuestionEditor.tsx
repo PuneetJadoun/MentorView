@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { Card } from "@/components/ui/Card";
+import { Switch } from "@/components/ui/Switch";
 import { OptionsEditor } from "@/components/builder/OptionsEditor";
 import { questionsApi, getApiErrorMessage } from "@/lib/api";
 import { OPTION_BASED_TYPES, QUESTION_TYPES } from "@/lib/types";
@@ -33,39 +35,36 @@ export function QuestionEditor({ question, onChange }: QuestionEditorProps) {
   };
 
   const isOptionBased = OPTION_BASED_TYPES.includes(question.type);
+  const typeLabel = QUESTION_TYPES.find((t) => t.value === question.type)?.label ?? question.type;
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-6 p-8">
+    <div className="animate-fade-in mx-auto flex max-w-3xl flex-col gap-8 p-6 sm:p-10">
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-[var(--color-text)]">
-          Question
-        </label>
+        <span className="mb-3 inline-flex items-center rounded-full bg-[var(--color-accent-soft)] px-2.5 py-1 text-xs font-medium text-[var(--color-accent)]">
+          {typeLabel}
+        </span>
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           onBlur={() => title.trim() && title !== question.title && saveField({ title: title.trim() })}
-          placeholder="Type your question"
-          className="w-full rounded-[var(--radius-md)] border border-[var(--color-border)] px-3.5 py-2.5 text-base outline-none focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+          placeholder="Type your question here"
+          className="w-full border-b-2 border-[var(--color-border)] bg-transparent py-2 text-2xl font-semibold tracking-tight outline-none transition-colors focus:border-[var(--color-accent)] sm:text-3xl"
         />
-      </div>
-
-      <div>
-        <label className="mb-1.5 block text-sm font-medium text-[var(--color-text)]">
-          Description <span className="text-[var(--color-text-muted)]">(optional)</span>
-        </label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           onBlur={() => description !== (question.description ?? "") && saveField({ description })}
-          rows={2}
-          placeholder="Add helper text for respondents"
-          className="w-full resize-none rounded-[var(--radius-md)] border border-[var(--color-border)] px-3.5 py-2.5 text-sm outline-none focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+          rows={1}
+          placeholder="Add a description (optional)"
+          className="mt-2 w-full resize-none bg-transparent text-sm text-[var(--color-text-muted)] outline-none placeholder:text-[var(--color-text-faint)]"
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="min-w-[200px] flex-1">
-          <label className="mb-1.5 block text-sm font-medium text-[var(--color-text)]">Type</label>
+      <Card className="flex flex-wrap items-center gap-6 p-5">
+        <div className="min-w-[180px] flex-1">
+          <label className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
+            Question type
+          </label>
           <select
             value={question.type}
             onChange={(e) => saveField({ type: e.target.value as QuestionType })}
@@ -79,23 +78,23 @@ export function QuestionEditor({ question, onChange }: QuestionEditorProps) {
           </select>
         </div>
 
-        <label className="flex cursor-pointer items-center gap-2 self-end pb-2.5 text-sm font-medium">
-          <input
-            type="checkbox"
-            checked={question.required}
-            onChange={(e) => saveField({ required: e.target.checked })}
-            className="size-4 cursor-pointer accent-[var(--color-accent)]"
-          />
-          Required
-        </label>
-      </div>
+        <div className="h-9 w-px bg-[var(--color-border)]" />
+
+        <Switch
+          checked={question.required}
+          onChange={(checked) => saveField({ required: checked })}
+          label="Required"
+        />
+      </Card>
 
       {isOptionBased && (
-        <OptionsEditor
-          questionId={question.id}
-          options={question.options}
-          onOptionsChange={handleOptionsChange}
-        />
+        <Card className="p-5">
+          <OptionsEditor
+            questionId={question.id}
+            options={question.options}
+            onOptionsChange={handleOptionsChange}
+          />
+        </Card>
       )}
     </div>
   );

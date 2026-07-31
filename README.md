@@ -824,16 +824,6 @@ The application is inspired by the user experience and interaction design of **T
 
 ---
 
-# Author
-
-**Puneet Kumar**
-
-GitHub: **https://github.com/<your-username>**
-
-LinkedIn: **https://linkedin.com/in/<your-profile>**
-
----
-
 # License
 
 This project was developed for educational and demonstration purposes as part of the Scaler SDE Full Stack Assignment.
